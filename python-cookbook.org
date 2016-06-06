@@ -1,0 +1,179 @@
+#+TITLE: Example .org file
+#+AUTHOR: Keith
+#+DATE: 2016-3-7 pm.
+
+* Chapter 4 -- Iterator and Generators
+  Iteration is one of Python's strongest feartures. At a high level, you might
+simply view iteration as a way to process items in a sequence. However, there is
+so much more that is possible, such as creating your own iterator objects, app-
+lying useful iteration patterns in the itertools module, making genrator func-
+tions, and so forth. This chapter aims to address common problems involving ite-
+ration.
+** 4.1-Manually Consuming an Iterator
+  The for statement is used to consume an iterable.
+  Get the iterator --> invokes __iter__() -> iter()
+  And run the iterator --> invokes __next__() -> next()
+
+** 4.2-Delegating Iteration
+  Python's iterator protocol requires __iter__() to return a special iterator o-
+bject taht implements a __next__() method to carry out the actual iteration. If
+all you doing is iterating over the contents of another container, you don't re-
+ally need to worry about the underlying details of how it works. All you need to
+do is forward the iteration request along.
+
+** 4.3-Creating New Iteration Patterns with Generators
+  A Generator only runs in response to 'next' operations carried out in iteration.
+
+  
+
+* Chapter 7 -- Functions
+  The goal of this chapter is to present some more advanced and unusual function
+definition and usage patterns.
+** 7.3-Attaching Informational Metadata to Function Arguments
+
+** 7.5-Defining Fuctions with Default Arguments
+  First, the values assigned as default are bound only once at the time of fun-
+ction definition.
+  Second, the values assigned as defaults should always be immutable objects,
+such as None, True, False, numbers, or strings. not empty list -> if you do this
+, you can run into all sorts of troubles if the default value ever escapes the 
+function and gets modified -- Such changes will permenently alter the defualt
+value across future function calls.
+
+** 7.6-Defining Anonymous or Inline Functions
+  Typically, lambda is used in the context of some other operation, such as sor-
+ting or a data reduction
+** 7.7-Capturing Variables in Anonymous Functions
+  the value of someone like x used in the lambda expression is a free variable
+that gets bound at runtime, not definition time. Thus, the value of x in the
+lambda expressions is whatever the value of x variable happens to be at the time
+of execution.
+  and if you wanat an anonymous function to capture a value at the point of def-
+inition and keep it, include the value as default value.
+
+** 7.8-Making an N-Argument Callback Work As a Callable with Fewer Arguments
+  from functools import partial, like partial(spam, 1)
+  Problem
+  You're writing code that relies on the use of callback functions(e.g., event 
+handlers, completion callbacks, etc.), but you want to have the callback func-
+tion carry extra state for use inside the callback function.
+** 7.10-Carrying Extra State with Callback Functions
+  Problem
+  You're writing code that relies on the use of callback functions(e.g., event
+handlers, completion callbacks, etc.), but you want to have the callback func-
+tion carry extra state for use inside the callback function.
+  coroutine = 协作程序
+** 7.11-Inlining Callback Functions
+  Problem
+  You're writing code that uses callback functions, but you're concerned about
+the proliferation of small functions and mind boggling control flow. You would
+like some way to make the code look more like a normal sequence of procedural 
+steps.
+  --too hard
+  
+** 7.12-Accessing Variables Defined Inside a Closure
+  Problem
+  You would like to extend a closure with functions that allow the inner vaira-
+bles to be accessd and modified.
+  ...
+  Function attributes allow the accessor methods to be attached to the closure
+function in a straightforward manner where they work a lot like instance methods
+(even though no class is involved)
+
+
+* Chapter-8 Classes and Objects
+  Topics include making objects support common Python features, usage of special
+methods, encapsulation techniques, inheritance, memory management, and useful 
+design patterns.
+** 8.1-Changing the String Representation of Instances
+  1. The __repr__() method returns the code representation of an instance, and 
+is usually the text you would type to re-create the instance. The built-in repr()
+functions returns this text, as does the interactive interpreter when inspecting
+values.
+  2. The __str__() method converts the instance to a string, and is the output
+produced by the str() and print() functions.
+  3. -- " !r " formatting code indicates that the output of __repr__() should be
+used instead of __str__().
+    for example:
+          print('p is {0!r}'.format(p)) -> p is Pair(3, 4)
+	  print('p is {0}'.format(p)) -> p is (3, 4)
+** 8.2-Custmizing String Formating
+  The __format__() method provides a hook into Python's string formatting funct-
+ionality. It's important to emphasize that the interpretation of format codes is
+entirely up to the class itself.
+** 8.3-Making Objects Support the Context-Management Protocal
+  the with statement -> __enter__() and __exit__() methods
+  The main principle behind writing a context manager is that you're writing 
+code that's meant to surround a block of statements as defined by the use of the
+with statement.
+  When the " with " statement is first encountered, the __enter__() method is 
+triggered. The return value of __enter__()(if any) is placed into the vairable
+indicated with the as qualifier. Afterward, the statements in the body of the
+with statement execute. Finally, the __exit__() method is triggered to clean up
+** 8.4-Saving Memory When Creating a Large Number of Instances
+  When you define __slots__, Python uses a much more compact internal represe-
+ntation for instances. Instead of each instance consisting of a dictionary, i-
+nstance are bulit around a small fixed-sized array, much like a tuple or list.
+  Attribute names listed in the __slots__ specifier are internally mapped to
+specifier indices within this array.
+  A side effect of using slots is that it is no longer possible to add new at-
+tributes to instances -- you are resisted to only those attribute names listed
+in the __slots__ specifier
+  A common misperception of __slots__ is that it is an encapsulation tool that
+prevents users from adding new attributes to instances. Although this is a side
+effect of using slots, this was never the original purpose. Instead, __slots__
+was always intended to be an optimization tool.  
+** 8.5-Encapsulating Names in a Class
+  The first convention is that any name that starts with a single leading under-
+score(_) should always be assumed to be internal implementation.
+  It doesn't actually prevent someone from accessing internal names.
+  The use of double leading undercores causes the name to be mangled to somethin
+else -> Such attributes cannot be overridden via inheritance.
+  lambda_ = 2.0 # Trailing _ to void clash with lambda keyword
+-> the use of single trailing underscore could be interpreted as a way to avoid
+a name collision rather than as indication that the value is private.
+** 8.6-Creating Managed Attributes
+  To add extra processing (e.g. type checking or validation) to the getting or
+setting of an instance attribute.
+  1. decorator -> @property -> @xxx.setter -> @xxx.deleter
+  Discussion:
+    A property attribute is actually a collection of methods bundled together.
+If you inspect a class with a property, you can find the raw methods in the 
+fget, fset, and fdel attributes of the property itself.
+    fget, fset and fdel are triggered automatically when the property is accessed
+** 8.7-Calling a Method on a Parent Class
+  Use super() function...
+  A very common use of super() is in the handling of the __init__() method to 
+make sure that parents are properly initialized.
+*** How Python implements inheritance.
+  For every class that you define, Python computers what's known as a method
+resolution order(MRO) list. The MRO list is simply a linear ordering of all
+the base classes.
+  >>> C.__mro__
+   (<class '__main__.C'>, ... , <class '__main__.Base>, <class 'object'>)
+  To implement inheritance, Python starts with the leftmost class and works its
+way left-to-right through classes on the MRO list until it finds the first att-
+ribute match.
+  The acutal determination of the MRO list itself is made using a technique kn-
+own as C3 Linearization. Without getting too bogged down in the mathematics of
+it, it is actually a merge sort of the MROs from the parent classes subject to 
+three constaints:
+  - Child classes get checked before parents
+  - Multiple parents get checked in the order listed
+  - If there are two valid choices for the next class, pick the one from first
+parent.
+
+  When you use the super() function, Python continues its search starting with
+the next class on the MRO. As long as every redefined method consistently uses
+super() and only calls it once, control will ultimately work its way through 
+the entire MRO list and each method will only be called once. This is why you
+don't get double calls to Base.__init__().
+
+*** A few general rules of thumb to use super()
+  First, make sure that all mmethods with the same name in an inheritance hier-
+achy have a compatible calling signature(i.e., same number of arguments, argu-
+ments names). This ensures that super() won't get tipped up if it tries to inv-
+oke a method on a class that's not a direct parent.
+  Second, it's usually good idea to make sure that the topmost class provides
+an implementation of the method so that the cain of lookups that occur along 
+the MRO get terminated by an actual method of some sort. 

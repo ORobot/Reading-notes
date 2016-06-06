@@ -1,0 +1,157 @@
+#+Title: Learn you a Haskell for Great Way
+#+Author: keith
+#+Date: 2016-3-9
+
+* Chapter-5 High-Order Functions
+  Haskell functions can take functions as parameters and return functions as re-
+turn values. A functions that does either of these things is called a high-order
+function. Higher-order functions are a really powerful way of solving problems
+and thinking about programs, and they're indispensable when using a functional
+programming language like Haskell
+** Curried Functions
+  A curried function is a function that, instead of taking several parameters, 
+always takes exactly one paramter, Then when it's called with parameter, it re-
+tuning a function that takes the next parameter, and so on.
+  Partial function -> a function with too few parameters.
+** 门卫
+  guard是与模式匹配配合使用的, 它的作用是增加过滤条件.对于区间匹配的条件函数, 使用门卫是很简
+洁而恰当的.
+  Guard: 在函数和" = "之间插入 " | "
+** Collatz sequence(also known as a Collatz chain)
+  - Start with any natural number.
+  - If the number is 1, stop.
+  - If the number is even, divide it by 2.
+  - If the numer is odd, multiply it by 3 and add 1.
+  - Repeat the algorithm with the resulting number.
+
+** Mapping Functions with Multiple Parameters
+  As you've seen, giving only one parameter to a function that takes two para-
+meters will cause it to return a functions that takes one parameter. So if we
+map * to the list [0..], we will get back a list of functions that take only
+one parameter.
+  [list] !! number --> getting the eletment with the index number from list
+
+** Lambdas
+  Lambdas are anonymous functions that use when we need a function only one.
+  1. To declare a lambda, we write a " \ ", and then we write the function's 
+parameters, separated by spaces. After that comes a ->, and then the functions
+body.
+  2. Lambdas are expressions
+  3. The expression (\xs -> length xs > 15) returns a functions that tells us
+Whether the length of the list passed to it is greater than 15
+
+** Illustrate currying.
+  Like:
+  addThree :: Int -> Int -> Int ->Int
+  addThree x y z = x + y + z
+->
+  addThree :: Int -> Int -> Int -> Int
+  addThree = \x -> \y -> \z -> x + y + z
+  These two functions are equivalent. Yet the first addThree function is far 
+more readable. The second one is little mmore than a gimmick to illustrate cu.
+
+** The creator of Haskell introduced some useful functions, called - folds.
+  Folds allow you to reduce a data structure (like a list) to a single value
+  Feature:
+    Folds can be used to implement any function where you tarverse a list once,
+    element by elemetn, and then return something based on that. Whenever you
+    want to traverse a list to return something, chances are you want a fold.
+
+  -- A fold takes a binary function, a starting value, and a list to fold up.
+
+  1. binary function -> one that takes two parameters, such as + or div)
+  2. foldl1 and foldr1 work much like fold1 and foldr, except that you don't 
+need to provide the with an explicit starting accumulator. the assume the first
+(or last) element of the list to be the starting accumulator, and then start the
+fold with the element next to it.
+
+** Scan Function
+  The scan1 and scanr functions are like foldl and foldr, except they report all
+the intermediate accmulator states in the form of a list. The scanl1 and scanr1
+functions are analogous to foldl1 and foldr1.
+  1. Scans are used to monitor the proegrss of a function that ca be implemented
+as fold.
+
+** Funciton Application with " $ "
+  Also called the function application apperator.
+  1. the $ function has the lowest precedence.
+  2. Function application with a space is left-associative, while function app-
+lication with " $ " is right-associative.
+  3. It's a convenience function that let us write fewer parentheses.
+  4. for example:
+   the expression:
+                 sum $ map sqrt [1..130].
+   When a $ is encountered, the expression on its right is applied as the para-
+meter to the function on its left.
+  5. Apart from getting rid of parentheses, $ lets us treat function application
+like just another function. This allows us to, for instance, map function appl-
+cation, map function application over a list of functions, like this:
+  ---- map ($ 3) [(4+), (10*), (^2), sqrt]
+  Here, the function ($ 3) gets mapped over the list. if you think about what
+the ($ 3) function does, you'll see that it takes a function and then applies
+that function to 3. So every function in the list gets applied to 3, which is 
+evident in the result.
+
+** Function Composition
+  function composition is defined like this: (f o g)(x) = f(g(x)).
+  -- This meas that composing two functinos is the equivalent of calling one
+function with some value and then calling another function with thw result
+of the first function.
+  1. " . " the key word that we do function composition with the . function.
+  2. Function composition is right-associative, so we can compose many functions
+at a time. The f (g (z x)) is equivalent to (f.g.z) x.
+
+** Function Composition with Multiple Parameters
+  Usually must partially apply them so that each function takes just one parame-
+ter.
+
+** Point-Free Style
+  Just get rid of some thing on both right sides.
+  
+* Chapter-6 Modules
+  A Haskell module is essentially a file that defines some functions, types, and
+type classes. A Haskell program is a collection of modules.l
+ 1. import + ModuleName (xx, xx) or -> hiding (xx, xx)
+ 2. " nub " function in Data.List takes a list and weeds out duplicates elements
+ 3. import qualified ModuleName as x
+
+** Solving Problems with Module Functions
+  the modules in the standard libraries provide many functions that can make our
+lives easier when coding in Haskell.
+ 1. words:
+    A functions converts a string into a list of string where each string is one
+word.
+ 2. group:
+    To group together words that are identical. This function takes a list and 
+groups adjacent elements into sublists if they are equal.
+ 3. tails function which dwells in Data.List:
+    tails take a list and successively applies the tail function to that list.
+ 4. isPrefixOf:
+    To see if one string starts with another.
+ 5. any:
+    It takes a predicate and a list, and it tells us if any element from the lis
+satisfies the predicate.
+
+** Use some Functions from Data.Char to be a bit sneaky and encode message
+  The " Caesar cipher " is a primitive method of encoding message by shifting e-
+ach character by a fixed number of positions in the alphabet.
+
+** On Strict Left Folds
+  Haskell is lazy, and so it defers actual computation of values for as long as
+possible. When we use foldl, Haskell doesn't compute the actual accumulator on
+every step. Instead, it defers its evaluation. Int the next step, it again doe-
+sn't evaluate the accumulator, but defers the evaluation. It also keeps the old
+deferred computation in memory, because the new one often refers to its results.
+So as the fold merrily goes along its way, it builds up a bunch of deferred com-
+putations, each taking a not insignificant amount of memory. Eventually, this 
+can cause a stack overflow error.
+  A strict version of fold1 in Data.List named fold1'.
+
+** Let's Find Some cool Numbers
+  A "Maybe a" typed value can have either zero elements or just one element.
+  1. If "find" finds an element that satisfies the predicate, it will return 
+that element wrapped in a Just. If it doesn't, it will return Nothing.
+
+** Mapping Keys to Values
+  Association lists(also called dictionaries) are lists taht are used to store
+key/value pairs where ordering doesn't matter.
